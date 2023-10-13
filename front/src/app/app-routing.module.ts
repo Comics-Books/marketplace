@@ -11,27 +11,29 @@ import { ShopingCartClientComponent } from './components/user/shoping-cart-clien
 import { NewComponent } from './components/admin/new/new.component';
 import { AdminloginviewComponent } from './views/adminloginview/adminloginview.component';
 import { EditComicComponent } from './components/admin/edit-comic/edit-comic.component';
-import {ClientDetailsComponent} from './components/admin/client-details/client-details.component';
+import { ClientDetailsComponent } from './components/admin/client-details/client-details.component';
 import { DetailAdminComponent } from './components/admin/detail-admin/detail-admin.component';
- 
 
 const routes: Routes = [
-  { path: 'comic/:isbn', component:  ComicDetailComponent },
-  { path: 'comicList', component: HomeuserviewComponent},
-  { path: '', component:  HomeloginviewComponent},
-  {path: 'register', component: RegisterAComponent},
-  {path: 'login', component: LoginComponent},
-  {path: 'cart', component: ShopingCartClientComponent},
-  {path: 'newcomic',component: NewComponent},
-  { path: 'purchase-history/:email', component: UserPurchaseHistoryViewComponent},
+  { path: 'comic/:isbn', component: ComicDetailComponent },
+  { path: 'comicList', component: HomeuserviewComponent },
+  { path: '', component: HomeloginviewComponent },
+  { path: 'register', component: RegisterAComponent },
+  { path: 'login', component: LoginComponent },
+  { path: 'cart', component: ShopingCartClientComponent },
+  { path: 'newcomic', component: NewComponent },
+  {
+    path: 'purchase-history/:email',
+    component: UserPurchaseHistoryViewComponent,
+  },
   { path: 'editar/:isbn', component: EditComicComponent },
-  { path: 'admin', component: AdminloginviewComponent},
-  { path: 'admin-client', component: ClientDetailsComponent},
-  { path: 'detailadmin/:isbn', component: DetailAdminComponent},
+  { path: 'admin', component: AdminloginviewComponent },
+  { path: 'admin-client', component: ClientDetailsComponent },
+  { path: 'detailadmin/:isbn', component: DetailAdminComponent },
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

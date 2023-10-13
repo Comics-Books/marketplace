@@ -12,14 +12,12 @@ import { UserService } from 'src/app/services/user/user.service';
   selector: 'app-user-purchase-history',
   templateUrl: './user-purchase-history.component.html',
   styleUrls: ['./user-purchase-history.component.scss'],
-  providers: [
-    DatePipe, 
-  ],
+  providers: [DatePipe],
 })
 export class UserPurchaseHistoryComponent implements OnInit {
   comics: Comic[] = [];
   originalComics: Comic[] = [];
-  genres:  Genre[] = [];
+  genres: Genre[] = [];
   selectedGenre: any = null;
   selectedCoverType: string | null = null;
   searchTerm: string = '';
@@ -62,18 +60,14 @@ export class UserPurchaseHistoryComponent implements OnInit {
     private comicService: ComicService,
     private datePipe: DatePipe,
     private userService: UserService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.getGenres();
-    /* this.route.paramMap.subscribe(params => {
-      this.userEmail = params.get('email') || '';
-      this.loadUserPurchaseHistory();
-    });  */
-   /*  this.userEmail = this.userService.getLoggedInEmail(); */
-   this.userEmail = localStorage.getItem('email')!;
-   this.loadUserPurchaseHistory();
-  } 
+
+    this.userEmail = localStorage.getItem('email')!;
+    this.loadUserPurchaseHistory();
+  }
   getGenres(): void {
     this.comicService.getGenres().subscribe((genres) => {
       this.genres = genres;
@@ -81,14 +75,14 @@ export class UserPurchaseHistoryComponent implements OnInit {
   }
 
   loadUserPurchaseHistory(): void {
-   this.orderService.getOrdersByEmail(this.userEmail).subscribe(orders => {
-      this.orders = orders.map(order => ({
+    this.orderService.getOrdersByEmail(this.userEmail).subscribe((orders) => {
+      this.orders = orders.map((order) => ({
         ...order,
-        date: this.formatDate(order.date) 
+        date: this.formatDate(order.date),
       }));
-      this.originalOrders = orders.map(order => ({
+      this.originalOrders = orders.map((order) => ({
         ...order,
-        date: this.formatDate(order.date) 
+        date: this.formatDate(order.date),
       }));
     });
   }
@@ -105,48 +99,55 @@ export class UserPurchaseHistoryComponent implements OnInit {
   }
   applyFilters(): void {
     let filteredOrders = this.originalOrders.slice();
-  
+
     if (this.columnFilters.isbn) {
       filteredOrders = filteredOrders.filter((order) =>
-        order.comic.isbn.toLowerCase().includes(this.columnFilters.isbn.toLowerCase())
+        order.comic.isbn
+          .toLowerCase()
+          .includes(this.columnFilters.isbn.toLowerCase())
       );
     }
-  
+
     if (this.columnFilters.title) {
       filteredOrders = filteredOrders.filter((order) =>
-        order.comic.title.toLowerCase().includes(this.columnFilters.title.toLowerCase())
+        order.comic.title
+          .toLowerCase()
+          .includes(this.columnFilters.title.toLowerCase())
       );
     }
-  
+
     if (this.columnFilters.author) {
       filteredOrders = filteredOrders.filter((order) =>
-        order.comic.author.toLowerCase().includes(this.columnFilters.author.toLowerCase())
+        order.comic.author
+          .toLowerCase()
+          .includes(this.columnFilters.author.toLowerCase())
       );
     }
-  
+
     if (this.columnFilters.genre !== null) {
       filteredOrders = filteredOrders.filter((order) =>
         order.comic.genres.some((g: any) => g.id === this.columnFilters.genre)
       );
     }
-  
+
     if (this.columnFilters.coverType !== null) {
-      filteredOrders = filteredOrders.filter((order) =>
-        (this.columnFilters.coverType === 'hard' && order.comic.ishardcover) ||
-        (this.columnFilters.coverType === 'soft' && !order.comic.ishardcover)
+      filteredOrders = filteredOrders.filter(
+        (order) =>
+          (this.columnFilters.coverType === 'hard' &&
+            order.comic.ishardcover) ||
+          (this.columnFilters.coverType === 'soft' && !order.comic.ishardcover)
       );
     }
-  
+
     if (!this.sortByTitleAscending) {
       filteredOrders.sort((a, b) => b.comic.title.localeCompare(a.comic.title));
     } else {
       filteredOrders.sort((a, b) => a.comic.title.localeCompare(b.comic.title));
     }
-  
+
     this.orders = filteredOrders;
   }
-  
-  
+
   toggleSortOrderPopup(order: 'A-Z' | 'Z-A') {
     this.currentSortOrder = order;
     this.sortByTitleAscending = !this.sortByTitleAscending;
@@ -182,18 +183,21 @@ export class UserPurchaseHistoryComponent implements OnInit {
 
   get comicsOnCurrentPage(): Comic[] {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-    const endIndex = Math.min(startIndex + this.itemsPerPage, this.comics.length);
+    const endIndex = Math.min(
+      startIndex + this.itemsPerPage,
+      this.comics.length
+    );
     return this.comics.slice(startIndex, endIndex);
   }
 
   toggleSearch() {
     this.showSearchPopup = !this.showSearchPopup;
-  if (!this.showSearchPopup) {
-    this.searchTerm = '';
-    this.searchTextGlobal = ''; 
-    this.applyFilters(); 
+    if (!this.showSearchPopup) {
+      this.searchTerm = '';
+      this.searchTextGlobal = '';
+      this.applyFilters();
+    }
   }
-}
 
   toggleFilterPopup(filterType: 'isbn' | 'author' | 'genre' | 'coverType') {
     if (filterType === 'isbn') {
@@ -208,8 +212,6 @@ export class UserPurchaseHistoryComponent implements OnInit {
 
     this.applyFilters();
   }
-
- 
 
   resetFiltersAndSorting() {
     this.selectedAuthor = '';
@@ -229,35 +231,36 @@ export class UserPurchaseHistoryComponent implements OnInit {
       this.loadUserPurchaseHistory();
       return;
     }
-  
+
     const searchKeywords = this.searchTextGlobal.toLowerCase().split(' ');
-  
+
     const filteredOrders = this.originalOrders.filter((order) => {
       const comic = order.comic;
       const comicTitle = comic.title.toLowerCase();
       const comicAuthor = comic.author.toLowerCase();
       const comicISBN = comic.isbn.toLowerCase();
       const comicGenres = comic.genres.map((genre) => genre.name.toLowerCase());
-  
+
       return (
-        searchKeywords.some(keyword => comicTitle.includes(keyword)) ||
-        searchKeywords.some(keyword => comicAuthor.includes(keyword)) ||
-        searchKeywords.some(keyword => comicISBN.includes(keyword)) ||
-        searchKeywords.some(keyword => comicGenres.some(genre => genre.includes(keyword)))
+        searchKeywords.some((keyword) => comicTitle.includes(keyword)) ||
+        searchKeywords.some((keyword) => comicAuthor.includes(keyword)) ||
+        searchKeywords.some((keyword) => comicISBN.includes(keyword)) ||
+        searchKeywords.some((keyword) =>
+          comicGenres.some((genre) => genre.includes(keyword))
+        )
       );
     });
-  
+
     this.orders = filteredOrders;
   }
-  
-    
+
   popup!: HTMLElement;
 
   onMouseOut(popup: HTMLElement) {
-    popup.style.display = "none";
+    popup.style.display = 'none';
   }
 
   onMouseEnter(popup: HTMLElement) {
-    popup.style.display = "block";
+    popup.style.display = 'block';
   }
 }
